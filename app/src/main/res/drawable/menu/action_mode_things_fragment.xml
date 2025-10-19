@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <group
+        android:id="@+id/group_actionmode_main">
+        <!-- <item
+            android:id="@+id/action_copy"
+            android:title="@string/action_copy"
+            android:icon="@drawable/ic_menu_copy"
+            android:orderInCategory="96"
+            app:showAsAction="always" /> -->
+        <item
+            android:id="@+id/action_cut"
+            android:title="@string/action_cut"
+            android:icon="@drawable/ic_menu_cut"
+            android:orderInCategory="97"
+            app:showAsAction="always" />
+        <item
+            android:id="@+id/action_delete"
+            android:title="@string/action_delete"
+            android:icon="@drawable/ic_menu_delete"
+            android:orderInCategory="98"
+            app:showAsAction="always"/>
+        <item
+            android:id="@+id/action_edit"
+            android:title="@string/action_edit"
+            android:icon="@drawable/ic_menu_edit"
+            android:orderInCategory="99"
+            app:showAsAction="always"/>
+        <item
+            android:id="@+id/action_view"
+            android:title="@string/action_view"
+            android:icon="@drawable/ic_menu_view"
+            android:orderInCategory="100"
+            app:showAsAction="never" />
+    </group>
+    <group
+        android:id="@+id/group_actionmode_copy"
+        android:visible="false">
+        <item
+            android:id="@+id/action_paste"
+            android:title="@string/action_paste"
+            android:icon="@drawable/ic_menu_paste"
+            android:orderInCategory="101"
+            app:showAsAction="always" />
+    </group>
+
+</menu>

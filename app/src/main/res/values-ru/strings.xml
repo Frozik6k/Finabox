@@ -1,0 +1,95 @@
+<resources>
+    <string name="app_name">Finabox</string>
+	<string name="app_short_description">Список вещей</string>
+
+    <string name="navigation_drawer_open">Открытая панель навигации</string>
+    <string name="navigation_drawer_close">Закрытая панель навигации</string>
+    <!-- Навигационные кнопки -->
+    <string name="nav_home">Домой</string>
+    <string name="nav_search">Поиск</string>
+    <string name="nav_create_archive">Создать архив</string>
+    <string name="nav_restore_from_archive">Восстановить из архива</string>
+    <string name="nav_setting">Настройки</string>
+    <string name="nav_share">Поделиться</string>
+    <string name="nav_rate_app">Оценить приложение</string> <!-- Оценить приложение -->
+    <string name="nav_communications">Коммуникации</string>
+
+    <string name="action_settings">Настройки</string>
+	
+	<string name="adUnitId">ca-app-pub-8829875194652210/9564473342</string>
+    <string name="ad_unit_id_interval">ca-app-pub-8829875194652210/2041206545</string>
+	
+	    <!-- Список вещей для примера -->
+    <string-array name="thing_array_primer">
+        <item>Кладовая</item> <!-- Кладовая -->
+        <item>Чердак</item> <!-- Чердак -->
+        <item>Подвал</item> <!-- Подвал -->
+    </string-array>
+        <!-- Список вещей в кладовой для примера -->
+    <string-array name="storehouse_array_primer">
+        <item>Обувь</item> <!-- Обувь -->
+        <item>Лыжи</item> <!-- Лыжи -->
+    </string-array>
+        <!-- Список вещей на чердаке -->
+    <string-array name="Attic_array_primer">
+        <item>Картина</item> <!-- Картина -->
+        <item>Мягкая игрушка</item> <!-- Мягкая игрушка -->
+    </string-array>
+    <!-- Список вещей в подвале -->
+    <string-array name="Basement_array_primer">
+        <item>Газонокосилка</item> <!-- Газонокосилка -->
+    </string-array>
+
+    <string name="name_item">Название</string>
+
+    <string name="name_thing">Имя вещи</string> <!-- имя вещи -->
+    <string name="description">Описание</string> <!-- описание -->
+
+    <string name="fragment_fotos_add">Нажми, чтобы добавить фотографию.</string> <!-- Нажми, чтобы добавить свою фотографию. -->
+
+    <string name="no_description">Описание отсутствует</string> <!-- Описание отсутствует -->
+
+    <string name="icon_thing_text">В</string> <!-- В -->
+    <string name="icon_box_text">Х</string> <!-- Х -->
+
+    <string name="thing">Вещь</string> <!-- Вещь -->
+    <string name="box">Хранилище</string> <!-- Хранилище -->
+
+    <string name="share">Поделиться</string> <!-- Поделиться -->
+
+    <!-- описание приложения -->
+    <string name="descriptionApplication">Поиск вещей станет намного проще, с приложением - "список вещей: finabox"</string>
+
+    <!-- Диалог сохранения архива -->
+    <string name="name_archive">имя архива</string>
+    <string name="save_archive">Создание архива</string>
+    <string name="message_true_save_archive">Архив успешно создан</string>
+    <string name="message_false_save_archive">Ошибка при создании архива</string>
+
+    <!-- Загрузка из архива -->
+    <string name="message_true_load_archive">Успешно!</string>
+    <string name="message_false_load_archive">Ошибка! Не удалось восстановить из архива</string>
+    <string name="message_no_arhive">Архивов нет</string>
+    <string name="title_load_archive">Список архивов</string>
+    <string name="title_restore_load_archive">Восстановление из архива</string>
+    <string name="message_restore_load_archive1">Вы уверены, что хотите восстановить из архива </string>
+    <string name="message_restore_load_archive2">\? Восстановление приведет к потере текущих данных!</string>
+
+    <!-- Диалог удаление вещей -->
+    <string name="delete_things">Удаление</string>
+    <string name="message_true_delete_things">Успешно удалено!</string>
+    <string name="message_delete_1">Следующие вещи будут удалены:</string>
+
+    <!-- Пункты ActionMode -->
+    <string name="action_delete">Удалить</string>
+    <string name="action_edit">Редактировать</string>
+    <string name="action_view">Просмотр</string>
+    <string name="action_copy">Копировать</string>
+    <string name="action_cut">Вырезать</string>
+    <string name="action_paste">Вставить</string>
+
+    <string name="char_pressed">✓</string>
+
+    <string name="ok">Ок</string>
+    <string name="cancel">Отмена</string>
+</resources>

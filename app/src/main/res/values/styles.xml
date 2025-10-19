@@ -1,0 +1,54 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item> <!-- цвет актионбара и других окрашенных элементов -->
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item> <!-- это как первый только для мелких элементов -->
+        <item name="colorAccent">@color/colorAccent</item> <!-- это цвет акцента (нажатия на элементы, что-то что должно выделятся -->
+        <item name="windowActionModeOverlay">true</item>
+        <item name="android:actionModeBackground">@color/colorGrey</item>
+        <!--		<item name="colorNormal">@color/colorNormal</item>  это цвет кнопки в нормальном состоянии -->
+        <!--		<item name="colorHover">@color/colorHover</item>  это цвет кнопки в зависшем состоянии -->
+        <!--		<item name="colorPressed">@color/colorPressed</item>  это цвет нажатой кнопки -->
+        <!-- <item name="android:textSize">@dimen/text_size</item> -->
+    </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
+    <style name="SplashScreen" parent="AppTheme.NoActionBar">
+        <item name="android:windowBackground">@drawable/background</item>
+    </style>
+
+    <style name="TextViewMy" parent="TextAppearance.AppCompat.Widget.TextView.SpinnerItem">
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+
+    
+    <style name="IconText" parent="TextAppearance.AppCompat.Medium">
+        <item name="android:background">@drawable/icon_thing</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_width">45dp</item>
+        <item name="android:layout_height">45dp</item>
+        <item name="android:textSize">30sp</item>
+    </style>
+
+    <style name="IconTextBox" parent="TextAppearance.AppCompat.Medium">
+        <item name="android:background">@drawable/icon_box</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_width">60dp</item>
+        <item name="android:layout_height">60dp</item>
+        <item name="android:textSize">35sp</item>
+    </style>
+
+</resources>

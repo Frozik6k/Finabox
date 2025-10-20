@@ -2,6 +2,9 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("com.google.devtools.ksp")
+    id("org.jetbrains.kotlin.plugin.lombok") version "2.2.0"
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -30,6 +33,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
         jvmTarget = "11"
@@ -37,12 +41,29 @@ android {
 }
 
 dependencies {
+    val room_version = "2.8.2"
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation("androidx.room:room-runtime:${room_version}")
+    ksp("androidx.room:room-compiler:$room_version")
+    annotationProcessor("androidx.room:room-compiler:$room_version")
+    implementation("androidx.room:room-ktx:${room_version}")
+    implementation("androidx.room:room-rxjava2:${room_version}")
+    implementation("androidx.room:room-rxjava3:${room_version}")
+    implementation("androidx.room:room-guava:${room_version}")
+    testImplementation("androidx.room:room-testing:${room_version}")
+    implementation("androidx.room:room-paging:${room_version}")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+
+    implementation("com.google.dagger:hilt-android:2.57.1")
+    ksp("com.google.dagger:hilt-compiler:2.57.1")
+
+    compileOnly("org.projectlombok:lombok:1.18.34")
 }

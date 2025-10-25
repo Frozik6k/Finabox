@@ -1,51 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/colorBackground">
+    android:layout_height="match_parent">
 
-    <android.support.v4.widget.DrawerLayout
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.Material3.ActionBar">
 
-        android:id="@+id/drawer_layout"
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:title="Finabox"
+            app:navigationIcon="?attr/homeAsUpIndicator"
+            app:menu="@menu/menu_main"
+        />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
-            tools:openDrawer="start">
+        android:clipToPadding="false"
+        android:paddingTop="8dp"
+        android:paddingBottom="96dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-            <include
-                layout="@layout/app_bar_main"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
-
-            <android.support.design.widget.NavigationView
-                android:id="@+id/nav_view"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="start"
-                android:fitsSystemWindows="true"
-                app:headerLayout="@layout/nav_header_main"
-                app:menu="@menu/activity_main_drawer"/>
-
-    </android.support.v4.widget.DrawerLayout>
-	
-	<FrameLayout
-		android:id="@+id/containerDialog"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-        android:fitsSystemWindows="true">
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:visibility="gone"
-            android:indeterminate="true"
-            />
-    </FrameLayout>
-
-
-</FrameLayout>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAdd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="TODO Описание контента"
+        app:tint="@android:color/white"
+        app:srcCompat="@android:drawable/ic_input_add"
+        app:layout_anchorGravity="bottom|end"
+        android:layout_margin="24dp"
+        app:layout_anchor="@id/root" />
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
 

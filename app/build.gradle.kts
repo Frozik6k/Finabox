@@ -38,9 +38,16 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+    buildFeatures {
+        viewBinding = true
+    }
 }
 
 dependencies {
+    implementation(libs.androidx.legacy.support.v4)
+    implementation(libs.androidx.recyclerview)
+    implementation(libs.androidx.drawerlayout)
+    implementation(libs.androidx.coordinatorlayout)
     val room_version = "2.8.2"
 
     implementation(libs.androidx.core.ktx)

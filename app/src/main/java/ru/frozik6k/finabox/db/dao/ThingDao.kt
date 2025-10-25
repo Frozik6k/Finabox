@@ -1,4 +1,4 @@
-package ru.frozik6k.finabox.repository.dao
+package ru.frozik6k.finabox.db.dao
 
 import androidx.room.Dao
 import androidx.room.Delete

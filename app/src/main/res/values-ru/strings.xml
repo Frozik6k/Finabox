@@ -11,6 +11,7 @@
     <string name="nav_restore_from_archive">Восстановить из архива</string>
     <string name="nav_setting">Настройки</string>
     <string name="nav_share">Поделиться</string>
+    <string name="nav_more">Больше</string>
     <string name="nav_rate_app">Оценить приложение</string> <!-- Оценить приложение -->
     <string name="nav_communications">Коммуникации</string>
 

@@ -1,4 +1,4 @@
-package ru.frozik6k.finabox
+package ru.frozik6k.finabox.db
 
 import android.content.Context
 import androidx.room.Room

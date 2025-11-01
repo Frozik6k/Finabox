@@ -4,24 +4,33 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Transaction
+import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 import ru.frozik6k.finabox.entity.Box
+import ru.frozik6k.finabox.entity.FotoBox
+import ru.frozik6k.finabox.entity.FotoThing
 import ru.frozik6k.finabox.entity.Thing
+import ru.frozik6k.finabox.entity.pojo.BoxWithFotos
+import ru.frozik6k.finabox.entity.pojo.ThingWithFotos
 
 @Dao
 interface BoxDao {
-    @Query("SELECT * FROM box")
-    fun getAll(): List<Box>
 
-    @Query("SELECT * FROM box WHERE name LIMIT 1")
-    fun findByName(name: String): Box
+    @Insert suspend fun insertBox(box: Box): Long
+    @Insert suspend fun insertFotos(fotos: List<FotoBox>)
+    @Update suspend fun updateBox(box: Box)
+    @Delete suspend fun deleteBox(box: Box)
 
-    @Insert
-    fun insertAll(vararg boxes: Box)
+    @Transaction
+    @Query("SELECT * FROM boxes WHERE id = :id")
+    suspend fun getBoxWithFotos(id: Long): BoxWithFotos
 
-    @Delete
-    fun delete(box: Box)
+    @Transaction
+    @Query("SELECT * FROM boxes ORDER BY created_at DESC")
+    fun getAllBoxesWithFotos(): Flow<List<BoxWithFotos>>
 
-    @Query("SELECT * FROM box ORDER BY id DESC")
-    fun observeAll(): Flow<List<Box>>
+    @Query("SELECT * FROM boxes WHERE name = :name LIMIT 1")
+    fun findByName(name: String): BoxWithFotos
+
 }

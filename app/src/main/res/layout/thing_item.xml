@@ -21,7 +21,7 @@
 
         <!-- Квадрат с буквой -->
         <TextView
-            android:id="@+id/ivLetter"
+            android:id="@+id/tvLetter"
             android:layout_width="56dp"
             android:layout_height="56dp"
             android:background="@drawable/bg_letter_square"
@@ -31,7 +31,7 @@
             android:textColor="@android:color/white" />
 
         <TextView
-            android:id="@+id/tvTitle"
+            android:id="@+id/tvName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"

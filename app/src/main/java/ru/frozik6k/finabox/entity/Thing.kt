@@ -3,16 +3,16 @@ package ru.frozik6k.finabox.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.Relation
 import java.time.Instant
 
-@Entity
+@Entity(tableName = "things")
 data class Thing(
     @PrimaryKey(autoGenerate = true)
-    val id: Long,
+    val id: Long = 0,
     val name: String,
     val description: String,
     val box: String,
-    val fotos: List<Foto>,
     @ColumnInfo(name = "created_at")
     val date: Instant = Instant.now(),
     @ColumnInfo(name = "expiration_date")

@@ -1,20 +1,19 @@
-package ru.frozik6k.finabox.entity
+package ru.frozik6k.finabox.data.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.Index
 import androidx.room.PrimaryKey
-import androidx.room.Relation
 import java.time.Instant
 
-@Entity(tableName = "boxes")
-data class Box(
+@Entity(tableName = "things")
+data class ThingDb(
     @PrimaryKey(autoGenerate = true)
-    val id: Long,
+    val id: Long = 0,
     val name: String,
     val description: String,
     val box: String,
     @ColumnInfo(name = "created_at")
-    val date: Instant = Instant.now()
+    val date: Instant = Instant.now(),
+    @ColumnInfo(name = "expiration_date")
+    val expirationDate: Instant
 )

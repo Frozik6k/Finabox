@@ -1,4 +1,4 @@
-package ru.frozik6k.finabox.db
+package ru.frozik6k.finabox.di
 
 import android.content.Context
 import androidx.room.Room
@@ -12,6 +12,7 @@ import dagger.hilt.components.SingletonComponent
 import jakarta.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import ru.frozik6k.finabox.data.storage.database.AppDatabase
 
 @Module
 @InstallIn(SingletonComponent::class)

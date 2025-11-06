@@ -1,4 +1,4 @@
-package ru.frozik6k.finabox.db.dao
+package ru.frozik6k.finabox.data.storage.dao
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -7,20 +7,21 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
-import ru.frozik6k.finabox.entity.Box
-import ru.frozik6k.finabox.entity.FotoBox
-import ru.frozik6k.finabox.entity.FotoThing
-import ru.frozik6k.finabox.entity.Thing
-import ru.frozik6k.finabox.entity.pojo.BoxWithFotos
-import ru.frozik6k.finabox.entity.pojo.ThingWithFotos
+import ru.frozik6k.finabox.data.entities.BoxDb
+import ru.frozik6k.finabox.data.entities.FotoBoxDb
+import ru.frozik6k.finabox.data.entities.pojo.BoxWithFotos
 
 @Dao
 interface BoxDao {
 
-    @Insert suspend fun insertBox(box: Box): Long
-    @Insert suspend fun insertFotos(fotos: List<FotoBox>)
-    @Update suspend fun updateBox(box: Box)
-    @Delete suspend fun deleteBox(box: Box)
+    @Insert
+    suspend fun insertBox(box: BoxDb): Long
+    @Insert
+    suspend fun insertFotos(fotos: List<FotoBoxDb>)
+    @Update
+    suspend fun updateBox(box: BoxDb)
+    @Delete
+    suspend fun deleteBox(box: BoxDb)
 
     @Transaction
     @Query("SELECT * FROM boxes WHERE id = :id")

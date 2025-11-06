@@ -1,4 +1,4 @@
-package ru.frozik6k.finabox.entity
+package ru.frozik6k.finabox.data.entities
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
@@ -9,16 +9,16 @@ import androidx.room.PrimaryKey
     tableName = "foto_box",
     foreignKeys = [
         ForeignKey(
-            entity = Box::class,
+            entity = BoxDb::class,
             parentColumns = ["id"],
             childColumns = ["boxId"],
-            onDelete = ForeignKey.CASCADE,   // удалит записи foto при удалении user
-            onUpdate = ForeignKey.NO_ACTION
+            onDelete = ForeignKey.Companion.CASCADE,   // удалит записи foto при удалении user
+            onUpdate = ForeignKey.Companion.NO_ACTION
         )
     ],
     indices = [Index("boxId")] // ускоряет JOIN
 )
-data class FotoBox(
+data class FotoBoxDb(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val path: String,

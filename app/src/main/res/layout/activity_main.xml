@@ -39,7 +39,6 @@
         app:tint="@android:color/white"
         app:srcCompat="@android:drawable/ic_input_add"
         app:layout_anchorGravity="bottom|end"
-        android:layout_margin="24dp"
-        app:layout_anchor="@id/root" />
+        android:layout_margin="24dp" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

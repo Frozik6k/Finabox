@@ -432,8 +432,9 @@ class ThingActivity : AppCompatActivity() {
     private fun createCameraFileAndUri(): Pair<File, Uri>? {
         val storageDir = File(filesDir, "photos").apply { if (!exists()) mkdirs() }
         return try {
-            val file = File.createTempFile("thing_photo_${'$'}{System.currentTimeMillis()}_", ".jpg", storageDir)
-            val uri = FileProvider.getUriForFile(this, "${'$'}{BuildConfig.APPLICATION_ID}.fileprovider", file)
+            val file = File.createTempFile("thing_photo_${System.currentTimeMillis()}_", ".jpg", storageDir)
+            val authority = "${applicationContext.packageName}.fileprovider"
+            val uri = FileProvider.getUriForFile(this, authority, file)
             file to uri
         } catch (io: IOException) {
             null

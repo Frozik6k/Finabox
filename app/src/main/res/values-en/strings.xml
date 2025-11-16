@@ -47,6 +47,22 @@
     <string name="name_thing">Name things</string> <!-- имя вещи -->
     <string name="description">Description</string> <!-- описание вещи -->
 
+    <string name="root_catalog">Root directory</string>
+    <string name="editor_title">New item</string>
+    <string name="editor_title_edit">Editing</string>
+    <string name="type_thing">Item</string>
+    <string name="type_box">Folder</string>
+    <string name="hint_name">Name</string>
+    <string name="hint_description">Description</string>
+    <string name="hint_parent">Folder</string>
+    <string name="hint_expiration">Expiration date</string>
+    <string name="add_photo">Add photo</string>
+    <string name="editor_action_save">Save</string>
+    <string name="editor_action_delete">Delete</string>
+    <string name="error_empty_name">Enter a name</string>
+    <string name="photo_preview_content">Photo preview</string>
+    <string name="remove_photo">Remove photo</string>
+
     <string name="fragment_fotos_add">Click to add a picture.</string> <!-- Нажми, чтобы добавить свою фотографию. -->
 
     <string name="no_description">No description</string> <!-- Описание отсутствует -->

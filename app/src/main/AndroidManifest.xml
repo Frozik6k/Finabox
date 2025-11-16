@@ -23,6 +23,7 @@
         </activity>
         <activity
             android:name=".activity.ThingActivity"
+            android:exported="false"
             android:parentActivityName=".presentation.main.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

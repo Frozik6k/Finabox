@@ -24,24 +24,47 @@ interface ThingDao {
         return id
     }
 
+    @Transaction
+    suspend fun updateThingWithFotos(
+        thing: ThingDb,
+        fotoPaths: List<String>
+    ) {
+        updateThing(thing)
+        deleteFotosForThing(thing.id)
+        insertFotos(fotoPaths.map { path -> FotoThingDb(path = path, thingId = thing.id) })
+    }
+
+
     @Insert
     suspend fun insertThing(thing: ThingDb): Long
+
     @Insert
     suspend fun insertFotos(fotos: List<FotoThingDb>)
+
     @Update
     suspend fun updateThing(thing: ThingDb)
+
     @Delete
     suspend fun deleteThing(thing: ThingDb)
+
+    @Query("DELETE FROM foto_thing WHERE thingId = :thingId")
+    suspend fun deleteFotosForThing(thingId: Long)
 
     @Transaction
     @Query("SELECT * FROM things WHERE id = :id")
     suspend fun getThingWithFotos(id: Long): ThingWithFotos
 
     @Transaction
-    @Query("SELECT * FROM things ORDER BY created_at DESC")
-    fun getAllThingsWithFotos(): Flow<List<ThingWithFotos>>
+    @Query(
+        "SELECT * FROM things WHERE (:boxName IS NULL AND box IS NULL) OR box = :boxName ORDER BY created_at DESC"
+    )
+    fun observeThingsInBox(boxName: String?): Flow<List<ThingWithFotos>>
 
     @Query("SELECT * FROM things WHERE name = :name LIMIT 1")
     fun findByName(name: String): ThingWithFotos
+
+    @Query("SELECT * FROM things WHERE box = :boxName")
+    suspend fun getThingsByParent(boxName: String): List<ThingDb>
+
 
 }

@@ -1,5 +1,6 @@
 package ru.frozik6k.finabox.adapter
 
+import android.graphics.drawable.GradientDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -45,8 +46,16 @@ class CatalogAdapter : RecyclerView.Adapter<CatalogAdapter.CatalogEntryViewHolde
             R.color.catalog_item_box
         }
         val color = ContextCompat.getColor(holder.itemView.context, colorRes)
-        holder.thingLetter.setTextColor(color)
-        holder.thingName.setTextColor(color)
+        val letterBackground = holder.thingLetter.background
+        if (letterBackground is GradientDrawable) {
+            letterBackground.mutate()
+            letterBackground.setColor(color)
+        } else {
+            holder.thingLetter.setBackgroundColor(color)
+        }
+
+        val textColor = ContextCompat.getColor(holder.itemView.context, android.R.color.black)
+        holder.thingName.setTextColor(textColor)
         holder.itemView.setOnClickListener { onItemClick(entry) }
         holder.itemView.setOnLongClickListener {
             onItemLongClick(entry)

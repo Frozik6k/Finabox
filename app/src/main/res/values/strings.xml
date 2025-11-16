@@ -53,6 +53,8 @@
     <string name="editor_title_edit">Редактирование</string>
     <string name="type_thing">Вещь</string>
     <string name="type_box">Каталог</string>
+    <string name="add_thing">add thing</string>
+    <string name="add_catalog">add box</string>
     <string name="hint_name">Название</string>
     <string name="hint_description">Описание</string>
     <string name="hint_parent">Каталог</string>

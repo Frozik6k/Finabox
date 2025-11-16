@@ -11,6 +11,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import ru.frozik6k.finabox.R
@@ -23,6 +25,7 @@ import ru.frozik6k.finabox.dto.CatalogType
 class MainActivity : AppCompatActivity() {
 
     private val viewModel: ThingsViewModel by viewModels()
+    private var isFabMenuVisible: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme_NoActionBar)
@@ -44,8 +47,22 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        findViewById<View>(R.id.fabAdd).setOnClickListener {
-            openEditorForCreation()
+        val fabAdd = findViewById<FloatingActionButton>(R.id.fabAdd)
+        val fabAddThing = findViewById<ExtendedFloatingActionButton>(R.id.fabAddThing)
+        val fabAddCatalog = findViewById<ExtendedFloatingActionButton>(R.id.fabAddCatalog)
+
+        fabAdd.setOnClickListener {
+            toggleFabMenu(fabAddThing, fabAddCatalog, fabAdd)
+        }
+
+        fabAddThing.setOnClickListener {
+            openEditorForCreation(CatalogType.THING)
+            hideFabMenu(fabAddThing, fabAddCatalog, fabAdd)
+        }
+
+        fabAddCatalog.setOnClickListener {
+            openEditorForCreation(CatalogType.BOX)
+            hideFabMenu(fabAddThing, fabAddCatalog, fabAdd)
         }
 
         thingsAdapter.onItemClick = { entry -> handleItemClick(entry) }
@@ -62,14 +79,38 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun openEditorForCreation() {
+    private fun openEditorForCreation(type: CatalogType) {
         val intent = ThingActivity.createIntent(
             context = this,
-            type = null,
+            type = type,
             elementId = null,
             parentBox = viewModel.currentCatalogName
         )
         startActivity(intent)
+    }
+
+    private fun toggleFabMenu(
+        thingButton: ExtendedFloatingActionButton,
+        catalogButton: ExtendedFloatingActionButton,
+        mainFab: FloatingActionButton,
+    ) {
+        isFabMenuVisible = !isFabMenuVisible
+        val visibility = if (isFabMenuVisible) View.VISIBLE else View.GONE
+        thingButton.visibility = visibility
+        catalogButton.visibility = visibility
+        mainFab.animate().rotation(if (isFabMenuVisible) 45f else 0f).start()
+    }
+
+    private fun hideFabMenu(
+        thingButton: ExtendedFloatingActionButton,
+        catalogButton: ExtendedFloatingActionButton,
+        mainFab: FloatingActionButton,
+    ) {
+        if (!isFabMenuVisible) return
+        isFabMenuVisible = false
+        thingButton.visibility = View.GONE
+        catalogButton.visibility = View.GONE
+        mainFab.animate().rotation(0f).start()
     }
 
     private fun handleItemClick(entry: CatalogDto) {

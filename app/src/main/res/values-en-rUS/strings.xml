@@ -52,6 +52,8 @@
     <string name="editor_title_edit">Editing</string>
     <string name="type_thing">Item</string>
     <string name="type_box">Folder</string>
+    <string name="add_thing">add thing</string>
+    <string name="add_catalog">add box</string>
     <string name="hint_name">Name</string>
     <string name="hint_description">Description</string>
     <string name="hint_parent">Folder</string>

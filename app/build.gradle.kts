@@ -48,6 +48,8 @@ dependencies {
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.drawerlayout)
     implementation(libs.androidx.coordinatorlayout)
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.9.4")
+    implementation("android.lifecycle:lifecycle-viewmodel-viewmodel-ktx:2.9.4")
     val room_version = "2.8.2"
 
     implementation(libs.androidx.core.ktx)

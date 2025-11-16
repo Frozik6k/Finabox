@@ -12,7 +12,12 @@ import dagger.hilt.components.SingletonComponent
 import jakarta.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import ru.frozik6k.finabox.data.entities.ThingDb
+import ru.frozik6k.finabox.data.storage.dao.ThingDao
 import ru.frozik6k.finabox.data.storage.database.AppDatabase
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -24,18 +29,42 @@ object DatabaseModule {
         @ApplicationContext context: Context,
         appScope: CoroutineScope
     ): AppDatabase {
-        return Room.databaseBuilder(context, AppDatabase::class.java, "app.db")
+        lateinit var database: AppDatabase
+        val builder = Room.databaseBuilder(context, AppDatabase::class.java, "app.db")
             .addCallback(object : RoomDatabase.Callback() {
                 override fun onCreate(db: SupportSQLiteDatabase) {
                     super.onCreate(db)
+                    appScope.launch {
+                        createSampleThings().forEach { thing ->
+                            database.thingDao().insertThing(thing)
+                        }
+                    }
                 }
             })
-            // .fallbackToDestructiveMigration() // только на прототип
-            .build()
+        database = builder.build()
+
+        return database
     }
+
+    private fun createSampleThings(): List<ThingDb> {
+        val now = Instant.now()
+        return (1..15).map { index ->
+            ThingDb(
+                name = "Событие $index",
+                description = "Описание события $index",
+                box = "Box ${(index % 3) + 1}",
+                expirationDate = now.plus(index.toLong() * 7, ChronoUnit.DAYS)
+            )
+        }
+    }
+
+    @Provides
+    fun provideThingDao(database: AppDatabase): ThingDao = database.thingDao()
 
     @Provides
     @Singleton
     fun provideAppScope(): CoroutineScope = CoroutineScope(SupervisorJob())
+
+
 
 }

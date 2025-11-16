@@ -4,13 +4,21 @@ import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import ru.frozik6k.finabox.R
 import ru.frozik6k.finabox.adapter.ThingAdapter
 import ru.frozik6k.finabox.dto.ThingGenerator
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+
+    private val viewModel: ThingsViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme_NoActionBar)
@@ -24,10 +32,19 @@ class MainActivity : AppCompatActivity() {
         thingsRecycler.layoutManager = LinearLayoutManager(this)
         thingsRecycler.adapter = thingsAdapter
 
-        thingsAdapter.data = ThingGenerator.generateThings(15)
-
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
+        observeThings(thingsAdapter)
 
+    }
+
+    private fun observeThings(adapter: ThingAdapter) {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.things.collect { things ->
+                    adapter.data = things
+                }
+            }
+        }
     }
 }

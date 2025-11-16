@@ -18,8 +18,8 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
@@ -60,6 +60,8 @@ class ThingActivity : AppCompatActivity() {
     private lateinit var typeGroup: RadioGroup
     private lateinit var deleteButton: Button
     private lateinit var saveButton: Button
+    private lateinit var photoPager: ViewPager2
+    private lateinit var photoPlaceholder: View
 
     private var elementId: Long? = null
     private var selectedType: CatalogType = CatalogType.THING
@@ -72,7 +74,7 @@ class ThingActivity : AppCompatActivity() {
         if (result.isNullOrEmpty()) return@registerForActivityResult
         grantPersistablePermissions(result)
         photoUris.addAll(result.map(Uri::toString))
-        photoAdapter.submitList(photoUris.toList())
+        notifyPhotosChanged()
     }
 
     private val capturePhoto = registerForActivityResult(
@@ -82,7 +84,7 @@ class ThingActivity : AppCompatActivity() {
             pendingCameraUri?.let { uri ->
                 grantPersistablePermissions(listOf(uri))
                 photoUris.add(uri.toString())
-                photoAdapter.submitList(photoUris.toList())
+                notifyPhotosChanged()
             }
         } else {
             pendingCameraFile?.delete()
@@ -110,7 +112,7 @@ class ThingActivity : AppCompatActivity() {
         initViews()
         readExtras()
         updateToolbarTitle()
-        setupRecycler()
+        setupPhotoPager()
         setupListeners()
         loadDataIfNeeded()
     }
@@ -127,6 +129,8 @@ class ThingActivity : AppCompatActivity() {
         typeGroup = findViewById(R.id.typeGroup)
         deleteButton = findViewById(R.id.btnDelete)
         saveButton = findViewById(R.id.btnSave)
+        photoPager = findViewById(R.id.photoPager)
+        photoPlaceholder = findViewById(R.id.photoPlaceholder)
 
         updateExpirationField()
     }
@@ -148,19 +152,17 @@ class ThingActivity : AppCompatActivity() {
         supportActionBar?.title = getString(titleRes)
     }
 
-    private fun setupRecycler() {
-        val recycler = findViewById<RecyclerView>(R.id.rvPhotos)
-        recycler.layoutManager = LinearLayoutManager(this, RecyclerView.HORIZONTAL, false)
-        recycler.adapter = photoAdapter
+    private fun setupPhotoPager() {
+        photoPager.adapter = photoAdapter
         photoAdapter.onRemove = { uri ->
             photoUris.remove(uri)
-            photoAdapter.submitList(photoUris.toList())
+            notifyPhotosChanged()
         }
+        notifyPhotosChanged()
     }
 
     private fun setupListeners() {
-        findViewById<View>(R.id.btnAddFromGallery).setOnClickListener { openGalleryPicker() }
-        findViewById<View>(R.id.btnAddFromCamera).setOnClickListener { handleCameraClick() }
+        findViewById<View>(R.id.photoContainer).setOnClickListener { showPhotoPickerDialog() }
 
         expirationInput.setOnClickListener { showDatePicker() }
         expirationInput.setOnFocusChangeListener { _, hasFocus ->
@@ -260,7 +262,7 @@ class ThingActivity : AppCompatActivity() {
             updateExpirationField()
             photoUris.clear()
             photoUris.addAll(photos)
-            photoAdapter.submitList(photoUris.toList())
+            notifyPhotosChanged()
             toggleExpirationVisibility()
         }
     }
@@ -277,7 +279,7 @@ class ThingActivity : AppCompatActivity() {
             parentBox = parentBoxName
             photoUris.clear()
             photoUris.addAll(photos)
-            photoAdapter.submitList(photoUris.toList())
+            notifyPhotosChanged()
             toggleExpirationVisibility()
         }
     }
@@ -437,6 +439,34 @@ class ThingActivity : AppCompatActivity() {
             null
         }
     }
+
+    private fun showPhotoPickerDialog() {
+        val options = arrayOf(
+            getString(R.string.photo_picker_camera),
+            getString(R.string.photo_picker_gallery)
+        )
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.photo_picker_title)
+            .setItems(options) { _, index ->
+                when (index) {
+                    0 -> handleCameraClick()
+                    1 -> openGalleryPicker()
+                }
+            }
+            .show()
+    }
+
+    private fun notifyPhotosChanged() {
+        photoAdapter.submitList(photoUris.toList())
+        updatePhotoSectionVisibility()
+    }
+
+    private fun updatePhotoSectionVisibility() {
+        val hasPhotos = photoUris.isNotEmpty()
+        photoPager.visibility = if (hasPhotos) View.VISIBLE else View.GONE
+        photoPlaceholder.visibility = if (hasPhotos) View.GONE else View.VISIBLE
+    }
+
 
     companion object {
         private const val EXTRA_ELEMENT_ID = "extra_element_id"

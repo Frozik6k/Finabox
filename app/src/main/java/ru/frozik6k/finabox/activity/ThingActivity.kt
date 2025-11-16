@@ -1,8 +1,10 @@
 package ru.frozik6k.finabox.activity
 
+import android.Manifest
 import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
@@ -13,11 +15,15 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.File
+import java.io.IOException
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -45,6 +51,8 @@ class ThingActivity : AppCompatActivity() {
 
     private val photoAdapter = PhotoPreviewAdapter()
     private val photoUris = mutableListOf<String>()
+    private var pendingCameraUri: Uri? = null
+    private var pendingCameraFile: File? = null
 
     private lateinit var nameInput: TextInputEditText
     private lateinit var descriptionInput: TextInputEditText
@@ -65,6 +73,32 @@ class ThingActivity : AppCompatActivity() {
         grantPersistablePermissions(result)
         photoUris.addAll(result.map(Uri::toString))
         photoAdapter.submitList(photoUris.toList())
+    }
+
+    private val capturePhoto = registerForActivityResult(
+        ActivityResultContracts.TakePicture()
+    ) { success ->
+        if (success) {
+            pendingCameraUri?.let { uri ->
+                grantPersistablePermissions(listOf(uri))
+                photoUris.add(uri.toString())
+                photoAdapter.submitList(photoUris.toList())
+            }
+        } else {
+            pendingCameraFile?.delete()
+        }
+        pendingCameraFile = null
+        pendingCameraUri = null
+    }
+
+    private val requestCameraPermission = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            openCamera()
+        } else {
+            Toast.makeText(this, R.string.camera_permission_required, Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -125,9 +159,8 @@ class ThingActivity : AppCompatActivity() {
     }
 
     private fun setupListeners() {
-        findViewById<View>(R.id.btnAddPhoto).setOnClickListener {
-            pickImages.launch("image/*")
-        }
+        findViewById<View>(R.id.btnAddFromGallery).setOnClickListener { openGalleryPicker() }
+        findViewById<View>(R.id.btnAddFromCamera).setOnClickListener { handleCameraClick() }
 
         expirationInput.setOnClickListener { showDatePicker() }
         expirationInput.setOnFocusChangeListener { _, hasFocus ->
@@ -359,11 +392,49 @@ class ThingActivity : AppCompatActivity() {
     private fun grantPersistablePermissions(uris: List<Uri>) {
         val resolver = contentResolver
         uris.forEach { uri ->
-            try {
-                resolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            } catch (_: SecurityException) {
-                // ignore if cannot persist permission
+            if (uri.scheme == "content") {
+                try {
+                    resolver.takePersistableUriPermission(
+                        uri,
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                    )
+                } catch (_: SecurityException) {
+                    // ignore if cannot persist permission
+                }
             }
+        }
+    }
+
+    private fun openGalleryPicker() {
+        pickImages.launch("image/*")
+    }
+
+    private fun handleCameraClick() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            openCamera()
+        } else {
+            requestCameraPermission.launch(Manifest.permission.CAMERA)
+        }
+    }
+
+    private fun openCamera() {
+        val (file, uri) = createCameraFileAndUri() ?: run {
+            Toast.makeText(this, R.string.camera_unavailable, Toast.LENGTH_SHORT).show()
+            return
+        }
+        pendingCameraFile = file
+        pendingCameraUri = uri
+        capturePhoto.launch(uri)
+    }
+
+    private fun createCameraFileAndUri(): Pair<File, Uri>? {
+        val storageDir = File(filesDir, "photos").apply { if (!exists()) mkdirs() }
+        return try {
+            val file = File.createTempFile("thing_photo_${'$'}{System.currentTimeMillis()}_", ".jpg", storageDir)
+            val uri = FileProvider.getUriForFile(this, "${'$'}{BuildConfig.APPLICATION_ID}.fileprovider", file)
+            file to uri
+        } catch (io: IOException) {
+            null
         }
     }
 

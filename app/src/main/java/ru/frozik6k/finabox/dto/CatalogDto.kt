@@ -11,5 +11,4 @@ data class CatalogDto(
     val name: String,
     val type: CatalogType,
     val parentBox: String?,
-    val photos: List<String>,
 )

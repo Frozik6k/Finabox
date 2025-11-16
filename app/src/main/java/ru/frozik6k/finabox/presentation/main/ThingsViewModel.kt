@@ -77,7 +77,6 @@ private fun ThingWithFotos.toDto(): CatalogDto {
         name = name,
         type = CatalogType.THING,
         parentBox = thing.box,
-        photos = fotos.map { it.path }
     )
 }
 
@@ -90,6 +89,5 @@ private fun BoxWithFotos.toDto(): CatalogDto {
         name = name,
         type = CatalogType.BOX,
         parentBox = box.box,
-        photos = fotos.map { it.path }
     )
 }

@@ -41,16 +41,7 @@ class CatalogAdapter : RecyclerView.Adapter<CatalogAdapter.CatalogEntryViewHolde
         val entry = data[position]
         holder.thingLetter.text = entry.letter
         holder.thingName.text = entry.name
-        val photos = entry.photos
-        if (photos.isEmpty()) {
-            holder.photoCarousel.visibility = View.GONE
-        } else {
-            holder.photoCarousel.visibility = View.VISIBLE
-            holder.photoCarouselAdapter.submitList(photos)
-            if (holder.photoCarousel.currentItem >= photos.size) {
-                holder.photoCarousel.setCurrentItem(0, false)
-            }
-        }
+
         val colorRes = if (entry.type == CatalogType.THING) {
             R.color.catalog_item_thing
         } else {
@@ -77,12 +68,7 @@ class CatalogAdapter : RecyclerView.Adapter<CatalogAdapter.CatalogEntryViewHolde
     class CatalogEntryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val thingLetter: TextView = itemView.findViewById(R.id.tvLetter)
         val thingName: TextView = itemView.findViewById(R.id.tvName)
-        val photoCarousel: ViewPager2 = itemView.findViewById(R.id.photoCarousel)
         val photoCarouselAdapter = PhotoCarouselAdapter()
 
-        init {
-            photoCarousel.adapter = photoCarouselAdapter
-            photoCarousel.offscreenPageLimit = 1
-        }
     }
 }

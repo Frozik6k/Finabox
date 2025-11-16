@@ -56,7 +56,6 @@
     <string name="add_catalog">add box</string>
     <string name="hint_name">Name</string>
     <string name="hint_description">Description</string>
-    <string name="hint_parent">Folder</string>
     <string name="hint_expiration">Expiration date</string>
     <string name="add_photo">Add photo</string>
     <string name="editor_action_save">Save</string>

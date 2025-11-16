@@ -48,7 +48,6 @@ class ThingActivity : AppCompatActivity() {
 
     private lateinit var nameInput: TextInputEditText
     private lateinit var descriptionInput: TextInputEditText
-    private lateinit var parentInput: TextInputEditText
     private lateinit var expirationInput: TextInputEditText
     private lateinit var typeGroup: RadioGroup
     private lateinit var deleteButton: Button
@@ -57,6 +56,7 @@ class ThingActivity : AppCompatActivity() {
     private var elementId: Long? = null
     private var selectedType: CatalogType = CatalogType.THING
     private var expirationDate: LocalDate = LocalDate.now().plusDays(30)
+    private var parentBox: String? = null
 
     private val pickImages = registerForActivityResult(
         ActivityResultContracts.GetMultipleContents()
@@ -89,7 +89,6 @@ class ThingActivity : AppCompatActivity() {
 
         nameInput = findViewById(R.id.etName)
         descriptionInput = findViewById(R.id.etDescription)
-        parentInput = findViewById(R.id.etParent)
         expirationInput = findViewById(R.id.etExpiration)
         typeGroup = findViewById(R.id.typeGroup)
         deleteButton = findViewById(R.id.btnDelete)
@@ -103,7 +102,7 @@ class ThingActivity : AppCompatActivity() {
         elementId = incomingId.takeIf { it > 0 }
         val typeName = intent.getStringExtra(EXTRA_ELEMENT_TYPE)
         selectedType = typeName?.let { CatalogType.valueOf(it) } ?: CatalogType.THING
-        parentInput.setText(intent.getStringExtra(EXTRA_PARENT_BOX) ?: "")
+        parentBox = intent.getStringExtra(EXTRA_PARENT_BOX)
     }
 
     private fun updateToolbarTitle() {
@@ -216,14 +215,14 @@ class ThingActivity : AppCompatActivity() {
     private suspend fun updateUiFromThing(
         name: String,
         description: String,
-        parentBox: String?,
+        parentBoxName: String?,
         expiration: Instant,
         photos: List<String>,
     ) {
         withContext(Dispatchers.Main) {
             nameInput.setText(name)
             descriptionInput.setText(description)
-            parentInput.setText(parentBox ?: "")
+            parentBox = parentBoxName
             expirationDate = LocalDate.ofInstant(expiration, ZoneId.systemDefault())
             updateExpirationField()
             photoUris.clear()
@@ -236,13 +235,13 @@ class ThingActivity : AppCompatActivity() {
     private suspend fun updateUiFromBox(
         name: String,
         description: String,
-        parentBox: String?,
+        parentBoxName: String?,
         photos: List<String>,
     ) {
         withContext(Dispatchers.Main) {
             nameInput.setText(name)
             descriptionInput.setText(description)
-            parentInput.setText(parentBox ?: "")
+            parentBox = parentBoxName
             photoUris.clear()
             photoUris.addAll(photos)
             photoAdapter.submitList(photoUris.toList())
@@ -270,12 +269,11 @@ class ThingActivity : AppCompatActivity() {
             return
         }
         val description = descriptionInput.text?.toString()?.trim().orEmpty()
-        val parent = parentInput.text?.toString()?.trim().takeIf { it?.isNotBlank() == true }
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
                 when (selectedType) {
-                    CatalogType.THING -> saveThing(name, description, parent)
-                    CatalogType.BOX -> saveBox(name, description, parent)
+                    CatalogType.THING -> saveThing(name, description, parentBox)
+                    CatalogType.BOX -> saveBox(name, description, parentBox)
                 }
             }
             finish()

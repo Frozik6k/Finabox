@@ -7,6 +7,9 @@ plugins {
     id("com.google.dagger.hilt.android")
 }
 
+val lifecycleVersion = libs.versions.lifecycle.get()
+
+
 android {
     namespace = "ru.frozik6k.finabox"
     compileSdk = 36
@@ -43,19 +46,30 @@ android {
     }
 }
 
+configurations.all {
+    resolutionStrategy.eachDependency {
+        if (requested.group == "android.lifecycle") {
+            val sanitizedName = requested.name.replace("viewmodel-viewmodel", "viewmodel")
+            useTarget("androidx.lifecycle:$sanitizedName:$lifecycleVersion")
+        }
+    }
+}
+
+
 dependencies {
     implementation(libs.androidx.legacy.support.v4)
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.drawerlayout)
     implementation(libs.androidx.coordinatorlayout)
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.9.4")
-    implementation("android.lifecycle:lifecycle-viewmodel-viewmodel-ktx:2.9.4")
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
     val room_version = "2.8.2"
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
+    implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.constraintlayout)
     implementation("androidx.room:room-runtime:${room_version}")
     ksp("androidx.room:room-compiler:$room_version")

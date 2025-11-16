@@ -2,6 +2,7 @@ package ru.frozik6k.finabox.presentation.main
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.Lifecycle
@@ -13,7 +14,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import ru.frozik6k.finabox.R
 import ru.frozik6k.finabox.adapter.ThingAdapter
-import ru.frozik6k.finabox.dto.ThingGenerator
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {

@@ -6,6 +6,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -38,6 +41,25 @@ class MainActivity : AppCompatActivity() {
 
         thingsRecycler.layoutManager = LinearLayoutManager(this)
         thingsRecycler.adapter = thingsAdapter
+
+
+        val root = findViewById<View>(R.id.root)
+        val appBar = findViewById<View>(R.id.appBar)
+        val fabMenu = findViewById<View>(R.id.fabMenu)
+        val initialRecyclerPaddingBottom = thingsRecycler.paddingBottom
+        val initialRecyclerPaddingTop = thingsRecycler.paddingTop
+        val initialFabPaddingBottom = fabMenu.paddingBottom
+
+        ViewCompat.setOnApplyWindowInsetsListener(root) { _, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            appBar.updatePadding(top = systemBars.top)
+            thingsRecycler.updatePadding(
+                top = initialRecyclerPaddingTop,
+                bottom = initialRecyclerPaddingBottom + systemBars.bottom,
+            )
+            fabMenu.updatePadding(bottom = initialFabPaddingBottom + systemBars.bottom)
+            insets
+        }
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)

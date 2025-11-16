@@ -41,22 +41,24 @@
         android:orientation="vertical">
 
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/fabAddThing"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:text="@string/add_thing"
-            android:visibility="gone"
-            app:icon="@android:drawable/ic_input_add"
-            app:iconTint="@android:color/white" />
-
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/fabAddCatalog"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
             android:text="@string/add_catalog"
             android:visibility="gone"
+            app:backgroundTint="@color/catalog_item_box"
+            app:icon="@android:drawable/ic_input_add"
+            app:iconTint="@android:color/white" />
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/fabAddThing"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:text="@string/add_thing"
+            android:visibility="gone"
+            app:backgroundTint="@color/catalog_item_thing"
             app:icon="@android:drawable/ic_input_add"
             app:iconTint="@android:color/white" />
 
@@ -65,6 +67,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="TODO Описание контента"
+            app:backgroundTint="@color/colorPrimary"
             app:srcCompat="@android:drawable/ic_input_add"
             app:tint="@android:color/white" />
     </LinearLayout>

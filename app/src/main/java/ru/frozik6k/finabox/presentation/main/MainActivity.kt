@@ -2,6 +2,7 @@ package ru.frozik6k.finabox.presentation.main
 
 import android.os.Bundle
 import android.view.View
+import android.view.ViewTreeObserver
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -16,25 +17,63 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.yandex.mobile.ads.banner.BannerAdEventListener
+import com.yandex.mobile.ads.banner.BannerAdSize
+import com.yandex.mobile.ads.banner.BannerAdView
+import com.yandex.mobile.ads.common.AdRequest
+import com.yandex.mobile.ads.common.AdRequestError
+import com.yandex.mobile.ads.common.ImpressionData
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import ru.frozik6k.finabox.R
 import ru.frozik6k.finabox.activity.ThingActivity
 import ru.frozik6k.finabox.adapter.CatalogAdapter
+import ru.frozik6k.finabox.databinding.ActivityMainBinding
 import ru.frozik6k.finabox.dto.CatalogDto
 import ru.frozik6k.finabox.dto.CatalogType
+import kotlin.math.roundToInt
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private val viewModel: ThingsViewModel by viewModels()
     private var isFabMenuVisible: Boolean = false
+    private var bannerAd: BannerAdView? = null
+    private lateinit var binding: ActivityMainBinding
+
+    // вычисляем размер баннера под ширину экрана/контейнера
+    private val adSize: BannerAdSize
+        get() {
+            var adWidthPixels = binding.adContainerView.width
+            if (adWidthPixels == 0) {
+                // если ещё не разложился layout — берём ширину экрана
+                adWidthPixels = resources.displayMetrics.widthPixels
+            }
+            val density = resources.displayMetrics.density
+            val adWidth = (adWidthPixels / density).roundToInt()
+            return BannerAdSize.stickySize(this, adWidth)
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme_NoActionBar)
         super.onCreate(savedInstanceState)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+
         enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
+        //setContentView(R.layout.activity_main)
+
+        // ждём, пока контейнер отрисуется, чтобы знать его ширину
+        binding.adContainerView.viewTreeObserver.addOnGlobalLayoutListener(
+            object : ViewTreeObserver.OnGlobalLayoutListener {
+                override fun onGlobalLayout() {
+                    binding.adContainerView.viewTreeObserver
+                        .removeOnGlobalLayoutListener(this)
+                    bannerAd = loadBannerAd(adSize)
+                }
+            }
+        )
 
         val thingsRecycler: RecyclerView = findViewById(R.id.recycler)
         val thingsAdapter = CatalogAdapter()
@@ -94,6 +133,39 @@ class MainActivity : AppCompatActivity() {
         observeToolbar(toolbar)
 
     }
+
+    private fun loadBannerAd(adSize: BannerAdSize): BannerAdView =
+        binding.banner.apply {
+            // размер и ID блока
+            setAdSize(adSize)
+            setAdUnitId("demo-banner-yandex") // тут твой реальный ID из кабинета
+
+            // слушатель событий (по желанию можно упростить)
+            setBannerAdEventListener(object : BannerAdEventListener {
+                override fun onAdLoaded() {
+                    if (isDestroyed) {
+                        bannerAd?.destroy()
+                        return
+                    }
+                }
+
+                override fun onAdFailedToLoad(error: AdRequestError) {
+                    // логируем ошибку; не спамим перезагрузками
+                }
+
+                override fun onAdClicked() {}
+                override fun onLeftApplication() {}
+                override fun onReturnedToApplication() {}
+                override fun onImpression(impressionData: ImpressionData?) {}
+            })
+
+            // запрос рекламы
+            loadAd(
+                AdRequest.Builder()
+                    // можно добавить таргетинг-параметры
+                    .build()
+            )
+        }
 
     override fun onBackPressed() {
         if (!viewModel.navigateUp()) {

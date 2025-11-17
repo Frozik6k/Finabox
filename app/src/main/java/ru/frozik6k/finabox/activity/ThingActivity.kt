@@ -9,7 +9,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
-import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -57,7 +56,6 @@ class ThingActivity : AppCompatActivity() {
     private lateinit var nameInput: TextInputEditText
     private lateinit var descriptionInput: TextInputEditText
     private lateinit var expirationInput: TextInputEditText
-    private lateinit var typeGroup: RadioGroup
     private lateinit var deleteButton: Button
     private lateinit var saveButton: Button
     private lateinit var photoPager: ViewPager2
@@ -126,7 +124,6 @@ class ThingActivity : AppCompatActivity() {
         nameInput = findViewById(R.id.etName)
         descriptionInput = findViewById(R.id.etDescription)
         expirationInput = findViewById(R.id.etExpiration)
-        typeGroup = findViewById(R.id.typeGroup)
         deleteButton = findViewById(R.id.btnDelete)
         saveButton = findViewById(R.id.btnSave)
         photoPager = findViewById(R.id.photoPager)
@@ -141,15 +138,21 @@ class ThingActivity : AppCompatActivity() {
         val typeName = intent.getStringExtra(EXTRA_ELEMENT_TYPE)
         selectedType = typeName?.let { CatalogType.valueOf(it) } ?: CatalogType.THING
         parentBox = intent.getStringExtra(EXTRA_PARENT_BOX)
+        toggleExpirationVisibility()
     }
 
     private fun updateToolbarTitle() {
-        val titleRes = if (elementId == null) {
+        val actionTitle = if (elementId == null) {
             R.string.editor_title
         } else {
             R.string.editor_title_edit
         }
-        supportActionBar?.title = getString(titleRes)
+        val typeTitle = if (selectedType == CatalogType.THING) {
+            R.string.type_thing
+        } else {
+            R.string.type_box
+        }
+        supportActionBar?.title = getString(R.string.editor_title_with_type, getString(actionTitle), getString(typeTitle))
     }
 
     private fun setupPhotoPager() {
@@ -169,15 +172,6 @@ class ThingActivity : AppCompatActivity() {
             if (hasFocus) {
                 showDatePicker()
             }
-        }
-
-        typeGroup.setOnCheckedChangeListener { _, checkedId ->
-            selectedType = if (checkedId == R.id.rbThing) {
-                CatalogType.THING
-            } else {
-                CatalogType.BOX
-            }
-            toggleExpirationVisibility()
         }
 
         saveButton.setOnClickListener { saveElement() }
@@ -213,13 +207,12 @@ class ThingActivity : AppCompatActivity() {
     }
 
     private fun loadDataIfNeeded() {
+        toggleExpirationVisibility()
         val currentId = elementId ?: run {
-            syncTypeGroup()
             deleteButton.visibility = View.GONE
             return
         }
         deleteButton.visibility = View.VISIBLE
-        syncTypeGroup()
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
                 when (selectedType) {
@@ -282,19 +275,6 @@ class ThingActivity : AppCompatActivity() {
             notifyPhotosChanged()
             toggleExpirationVisibility()
         }
-    }
-
-    private fun syncTypeGroup() {
-        typeGroup.check(
-            if (selectedType == CatalogType.THING) R.id.rbThing else R.id.rbBox
-        )
-        if (elementId != null) {
-            typeGroup.isEnabled = false
-            for (i in 0 until typeGroup.childCount) {
-                typeGroup.getChildAt(i).isEnabled = false
-            }
-        }
-        toggleExpirationVisibility()
     }
 
     private fun saveElement() {

@@ -49,6 +49,7 @@
     <string name="root_catalog">Корневой каталог</string>
     <string name="editor_title">Новый элемент</string>
     <string name="editor_title_edit">Редактирование</string>
+    <string name="editor_title_with_type">%1$s • %2$s</string>
     <string name="type_thing">Вещь</string>
     <string name="type_box">Каталог</string>
     <string name="add_thing">Добавить вещь</string>
@@ -63,7 +64,6 @@
     <string name="photo_picker_gallery">Галерея</string>
     <string name="photo_preview_label">Выбранные фото</string>
     <string name="section_basic_info">Основная информация</string>
-    <string name="section_type_label">Тип элемента</string>
     <string name="editor_action_save">Сохранить</string>
     <string name="editor_action_delete">Удалить</string>
     <string name="error_empty_name">Введите название</string>
@@ -83,6 +83,8 @@
     <string name="box">Хранилище</string> <!-- Хранилище -->
 
     <string name="share">Поделиться</string> <!-- Поделиться -->
+
+    <string name="rsya_advertisement">Реклама · РСЯ</string>
 
     <!-- описание приложения -->
     <string name="descriptionApplication">Поиск вещей станет намного проще, с приложением - "список вещей: finabox"</string>

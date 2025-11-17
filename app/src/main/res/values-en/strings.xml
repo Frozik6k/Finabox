@@ -50,6 +50,7 @@
     <string name="root_catalog">Root directory</string>
     <string name="editor_title">New item</string>
     <string name="editor_title_edit">Editing</string>
+    <string name="editor_title_with_type">%1$s • %2$s</string>
     <string name="type_thing">Item</string>
     <string name="type_box">Folder</string>
     <string name="add_thing">add thing</string>
@@ -64,7 +65,6 @@
     <string name="photo_picker_gallery">Gallery</string>
     <string name="photo_preview_label">Selected photos</string>
     <string name="section_basic_info">Basic information</string>
-    <string name="section_type_label">Item type</string>
     <string name="editor_action_save">Save</string>
     <string name="editor_action_delete">Delete</string>
     <string name="error_empty_name">Enter a name</string>
@@ -84,6 +84,8 @@
     <string name="box">Box</string> <!-- Хранилище -->
 
     <string name="share">Share</string> <!-- Поделиться -->
+
+    <string name="rsya_advertisement">Ad · Powered by the Yandex Advertising Network</string>
 
     <!-- описание приложения -->
     <string name="descriptionApplication">Search things will become much easier with the application - "list of things: finabox"</string>

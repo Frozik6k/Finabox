@@ -64,6 +64,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation("androidx.viewpager2:viewpager2:1.1.0")
+    implementation("com.yandex.android:mobileads:7.16.1")
     val room_version = "2.8.2"
 
     implementation(libs.androidx.core.ktx)

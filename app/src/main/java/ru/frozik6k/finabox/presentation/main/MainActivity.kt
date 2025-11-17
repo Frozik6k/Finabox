@@ -1,11 +1,13 @@
 package ru.frozik6k.finabox.presentation.main
 
 import android.os.Bundle
+import android.view.Menu
 import android.view.View
 import android.view.ViewTreeObserver
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -85,9 +87,11 @@ class MainActivity : AppCompatActivity() {
         val root = findViewById<View>(R.id.root)
         val appBar = findViewById<View>(R.id.appBar)
         val fabMenu = findViewById<View>(R.id.fabMenu)
+        val adContainer = findViewById<View>(R.id.ad_container_view)
         val initialRecyclerPaddingBottom = thingsRecycler.paddingBottom
         val initialRecyclerPaddingTop = thingsRecycler.paddingTop
         val initialFabPaddingBottom = fabMenu.paddingBottom
+        val initialAdPaddingBottom = adContainer.paddingBottom
 
         ViewCompat.setOnApplyWindowInsetsListener(root) { _, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -97,6 +101,7 @@ class MainActivity : AppCompatActivity() {
                 bottom = initialRecyclerPaddingBottom + systemBars.bottom,
             )
             fabMenu.updatePadding(bottom = initialFabPaddingBottom + systemBars.bottom)
+            adContainer.updatePadding(bottom = initialAdPaddingBottom + systemBars.bottom)
             insets
         }
 
@@ -134,11 +139,40 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+
+        val searchItem = menu.findItem(R.id.action_search)
+        val searchView = searchItem.actionView as SearchView
+        searchView.queryHint = getString(R.string.nav_search)
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                viewModel.onSearchQueryChanged(query.orEmpty())
+                searchView.clearFocus()
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                viewModel.onSearchQueryChanged(newText.orEmpty())
+                return true
+            }
+        })
+
+        searchView.setOnCloseListener {
+            viewModel.onSearchQueryChanged("")
+            false
+        }
+
+        return true
+    }
+
+
     private fun loadBannerAd(adSize: BannerAdSize): BannerAdView =
         binding.banner.apply {
             // размер и ID блока
             setAdSize(adSize)
-            setAdUnitId("demo-banner-yandex") // тут твой реальный ID из кабинета
+            setAdUnitId("R-M-17528902-1") // тут твой реальный ID из кабинета
 
             // слушатель событий (по желанию можно упростить)
             setBannerAdEventListener(object : BannerAdEventListener {

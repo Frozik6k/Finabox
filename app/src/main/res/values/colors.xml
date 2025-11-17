@@ -24,5 +24,7 @@
     <color name="catalog_item_thing">#EF5350</color>
     <color name="catalog_item_box">#64B5F6</color>
 
+    <color name="ic_launcher_background">#FF9A32</color>
+
 
 </resources>

@@ -10,6 +10,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
@@ -117,10 +118,26 @@ class ThingActivity : AppCompatActivity() {
 
         initViews()
         readExtras()
+        val restoredFromState = restoreState(savedInstanceState)
         updateToolbarTitle()
         setupPhotoPager()
         setupListeners()
-        loadDataIfNeeded()
+        if (!restoredFromState) {
+            loadDataIfNeeded()
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putLong(STATE_ELEMENT_ID, elementId ?: -1L)
+        outState.putString(STATE_SELECTED_TYPE, selectedType.name)
+        outState.putString(STATE_PARENT_BOX, parentBox)
+        outState.putString(STATE_NAME_VALUE, nameInput.text?.toString())
+        outState.putString(STATE_DESCRIPTION_VALUE, descriptionInput.text?.toString())
+        outState.putLong(STATE_EXPIRATION_DATE, expirationDate.toEpochDay())
+        outState.putStringArrayList(STATE_PHOTO_URIS, ArrayList(photoUris))
+        pendingCameraUri?.toString()?.let { outState.putString(STATE_PENDING_CAMERA_URI, it) }
+        pendingCameraFile?.absolutePath?.let { outState.putString(STATE_PENDING_CAMERA_FILE, it) }
     }
 
     private fun initViews() {
@@ -148,6 +165,35 @@ class ThingActivity : AppCompatActivity() {
         selectedType = typeName?.let { CatalogType.valueOf(it) } ?: CatalogType.THING
         parentBox = intent.getStringExtra(EXTRA_PARENT_BOX)
         toggleExpirationVisibility()
+        updateDeleteButtonVisibility()
+    }
+
+    private fun restoreState(state: Bundle?): Boolean {
+        state ?: return false
+        elementId = state.getLong(STATE_ELEMENT_ID).takeIf { it > 0 }
+        selectedType = state.getString(STATE_SELECTED_TYPE)?.let { restoredType ->
+            runCatching { CatalogType.valueOf(restoredType) }.getOrDefault(selectedType)
+        } ?: selectedType
+        parentBox = state.getString(STATE_PARENT_BOX)
+        nameInput.setText(state.getString(STATE_NAME_VALUE).orEmpty())
+        descriptionInput.setText(state.getString(STATE_DESCRIPTION_VALUE).orEmpty())
+        val epochDay = state.getLong(STATE_EXPIRATION_DATE, expirationDate.toEpochDay())
+        expirationDate = LocalDate.ofEpochDay(epochDay)
+        val restoredPhotos = state.getStringArrayList(STATE_PHOTO_URIS)
+        photoUris.clear()
+        if (!restoredPhotos.isNullOrEmpty()) {
+            photoUris.addAll(restoredPhotos)
+        }
+        pendingCameraUri = state.getString(STATE_PENDING_CAMERA_URI)?.let { Uri.parse(it) }
+        pendingCameraFile = state.getString(STATE_PENDING_CAMERA_FILE)?.let { File(it) }
+        toggleExpirationVisibility()
+        updateExpirationField()
+        updateDeleteButtonVisibility()
+        return true
+    }
+
+    private fun updateDeleteButtonVisibility() {
+        deleteButton.visibility = if (elementId == null) View.GONE else View.VISIBLE
     }
 
     private fun updateToolbarTitle() {
@@ -467,6 +513,7 @@ class ThingActivity : AppCompatActivity() {
         val (targetWidth, targetHeight) = getPhotoTargetSize()
         return withContext(Dispatchers.IO) {
             uris.mapNotNull { uri -> resizePhotoToFile(uri, targetWidth, targetHeight) }
+
         }
     }
 
@@ -504,10 +551,26 @@ class ThingActivity : AppCompatActivity() {
 
     private fun decodeBitmap(uri: Uri, targetWidth: Int, targetHeight: Int): Bitmap? {
         val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-        openInputStream(uri)?.use { stream -> BitmapFactory.decodeStream(stream, null, options) } ?: return null
+
+        // 1. Просто проверяем, что смогли открыть поток
+        val boundsStream = openInputStream(uri) ?: return null
+        boundsStream.use { stream ->
+            BitmapFactory.decodeStream(stream, null, options)
+        }
+
+        if (options.outWidth <= 0 || options.outHeight <= 0) {
+            // не смогли прочитать размеры
+            return null
+        }
+
         options.inSampleSize = calculateInSampleSize(options, targetWidth, targetHeight)
         options.inJustDecodeBounds = false
-        return openInputStream(uri)?.use { stream -> BitmapFactory.decodeStream(stream, null, options) }
+
+        // 2. Второй раз реально декодируем
+        val bitmapStream = openInputStream(uri) ?: return null
+        return bitmapStream.use { stream ->
+            BitmapFactory.decodeStream(stream, null, options)
+        }
     }
 
     private fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
@@ -544,13 +607,13 @@ class ThingActivity : AppCompatActivity() {
             ContentResolver.SCHEME_FILE -> uri.path?.let { path ->
                 try {
                     FileInputStream(File(path))
-                } catch (_: IOException) {
+                } catch (e : IOException) {
                     null
                 }
             }
             else -> try {
                 contentResolver.openInputStream(uri)
-            } catch (_: Exception) {
+            } catch (e: Exception) {
                 null
             }
         }
@@ -562,6 +625,15 @@ class ThingActivity : AppCompatActivity() {
         private const val EXTRA_ELEMENT_ID = "extra_element_id"
         private const val EXTRA_ELEMENT_TYPE = "extra_element_type"
         private const val EXTRA_PARENT_BOX = "extra_parent_box"
+        private const val STATE_ELEMENT_ID = "state_element_id"
+        private const val STATE_SELECTED_TYPE = "state_selected_type"
+        private const val STATE_PARENT_BOX = "state_parent_box"
+        private const val STATE_NAME_VALUE = "state_name_value"
+        private const val STATE_DESCRIPTION_VALUE = "state_description_value"
+        private const val STATE_EXPIRATION_DATE = "state_expiration_date"
+        private const val STATE_PHOTO_URIS = "state_photo_uris"
+        private const val STATE_PENDING_CAMERA_URI = "state_pending_camera_uri"
+        private const val STATE_PENDING_CAMERA_FILE = "state_pending_camera_file"
 
         fun createIntent(
             context: Context,

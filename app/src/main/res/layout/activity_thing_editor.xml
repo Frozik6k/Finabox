@@ -109,7 +109,7 @@
                 <FrameLayout
                     android:id="@+id/photoContainer"
                     android:layout_width="match_parent"
-                    android:layout_height="260dp"
+                    android:layout_height="@dimen/photo_container_height"
                     android:clickable="true"
                     android:focusable="true"
                     android:foreground="?attr/selectableItemBackground"

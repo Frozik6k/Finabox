@@ -71,6 +71,7 @@
     <string name="remove_photo">Remove photo</string>
     <string name="camera_permission_required">Allow camera access to take a picture.</string>
     <string name="camera_unavailable">Unable to open the camera</string>
+    <string name="photo_resize_error">Failed to process the selected photos</string>
 
     <string name="fragment_fotos_add">Click to add a picture.</string> <!-- Нажми, чтобы добавить свою фотографию. -->
 

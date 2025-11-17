@@ -2,9 +2,12 @@ package ru.frozik6k.finabox.activity
 
 import android.Manifest
 import android.app.DatePickerDialog
+import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
@@ -22,7 +25,10 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.io.IOException
+import java.io.InputStream
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -38,6 +44,9 @@ import ru.frozik6k.finabox.data.entities.ThingDb
 import ru.frozik6k.finabox.data.storage.dao.BoxDao
 import ru.frozik6k.finabox.data.storage.dao.ThingDao
 import ru.frozik6k.finabox.dto.CatalogType
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.roundToInt
 
 @AndroidEntryPoint
 class ThingActivity : AppCompatActivity() {
@@ -59,6 +68,7 @@ class ThingActivity : AppCompatActivity() {
     private lateinit var deleteButton: Button
     private lateinit var saveButton: Button
     private lateinit var photoPager: ViewPager2
+    private lateinit var photoContainer: View
     private lateinit var photoPlaceholder: View
 
     private var elementId: Long? = null
@@ -70,22 +80,20 @@ class ThingActivity : AppCompatActivity() {
         ActivityResultContracts.GetMultipleContents()
     ) { result ->
         if (result.isNullOrEmpty()) return@registerForActivityResult
-        grantPersistablePermissions(result)
-        photoUris.addAll(result.map(Uri::toString))
-        notifyPhotosChanged()
+        handleSelectedPhotos(result)
     }
 
     private val capturePhoto = registerForActivityResult(
         ActivityResultContracts.TakePicture()
     ) { success ->
-        if (success) {
-            pendingCameraUri?.let { uri ->
-                grantPersistablePermissions(listOf(uri))
-                photoUris.add(uri.toString())
-                notifyPhotosChanged()
+        val uri = pendingCameraUri
+        val file = pendingCameraFile
+        if (success && uri != null) {
+            handleSelectedPhotos(listOf(uri)) {
+                file?.delete()
             }
         } else {
-            pendingCameraFile?.delete()
+            file?.delete()
         }
         pendingCameraFile = null
         pendingCameraUri = null
@@ -127,6 +135,7 @@ class ThingActivity : AppCompatActivity() {
         deleteButton = findViewById(R.id.btnDelete)
         saveButton = findViewById(R.id.btnSave)
         photoPager = findViewById(R.id.photoPager)
+        photoContainer = findViewById(R.id.photoContainer)
         photoPlaceholder = findViewById(R.id.photoPlaceholder)
 
         updateExpirationField()
@@ -165,7 +174,7 @@ class ThingActivity : AppCompatActivity() {
     }
 
     private fun setupListeners() {
-        findViewById<View>(R.id.photoContainer).setOnClickListener { showPhotoPickerDialog() }
+        photoContainer.setOnClickListener { showPhotoPickerDialog() }
 
         expirationInput.setOnClickListener { showDatePicker() }
         expirationInput.setOnFocusChangeListener { _, hasFocus ->
@@ -371,22 +380,6 @@ class ThingActivity : AppCompatActivity() {
         boxDao.deleteBox(box)
     }
 
-    private fun grantPersistablePermissions(uris: List<Uri>) {
-        val resolver = contentResolver
-        uris.forEach { uri ->
-            if (uri.scheme == "content") {
-                try {
-                    resolver.takePersistableUriPermission(
-                        uri,
-                        Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                    )
-                } catch (_: SecurityException) {
-                    // ignore if cannot persist permission
-                }
-            }
-        }
-    }
-
     private fun openGalleryPicker() {
         pickImages.launch("image/*")
     }
@@ -447,6 +440,122 @@ class ThingActivity : AppCompatActivity() {
         photoPager.visibility = if (hasPhotos) View.VISIBLE else View.GONE
         photoPlaceholder.visibility = if (hasPhotos) View.GONE else View.VISIBLE
     }
+
+    private fun handleSelectedPhotos(uris: List<Uri>, onFinished: (() -> Unit)? = null) {
+        lifecycleScope.launch {
+            try {
+                val processedPhotos = resizeAndStorePhotos(uris)
+                when {
+                    processedPhotos.isEmpty() -> {
+                        Toast.makeText(this@ThingActivity, R.string.photo_resize_error, Toast.LENGTH_SHORT).show()
+                    }
+                    else -> {
+                        photoUris.addAll(processedPhotos)
+                        notifyPhotosChanged()
+                        if (processedPhotos.size < uris.size) {
+                            Toast.makeText(this@ThingActivity, R.string.photo_resize_error, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+            } finally {
+                onFinished?.invoke()
+            }
+        }
+    }
+
+    private suspend fun resizeAndStorePhotos(uris: List<Uri>): List<String> {
+        val (targetWidth, targetHeight) = getPhotoTargetSize()
+        return withContext(Dispatchers.IO) {
+            uris.mapNotNull { uri -> resizePhotoToFile(uri, targetWidth, targetHeight) }
+        }
+    }
+
+    private fun getPhotoTargetSize(): Pair<Int, Int> {
+        val targetWidth = photoContainer.width.takeIf { it > 0 } ?: resources.displayMetrics.widthPixels
+        val defaultHeight = resources.getDimensionPixelSize(R.dimen.photo_container_height)
+        val targetHeight = photoContainer.height.takeIf { it > 0 } ?: defaultHeight
+        return targetWidth to targetHeight
+    }
+
+    private fun resizePhotoToFile(uri: Uri, targetWidth: Int, targetHeight: Int): String? {
+        val bitmap = decodeBitmap(uri, targetWidth, targetHeight) ?: return null
+        val scaledBitmap = resizeBitmapToBounds(bitmap, targetWidth, targetHeight)
+        if (scaledBitmap !== bitmap) {
+            bitmap.recycle()
+        }
+        val outputFile = try {
+            createScaledPhotoFile()
+        } catch (io: IOException) {
+            scaledBitmap.recycle()
+            return null
+        }
+        return try {
+            FileOutputStream(outputFile).use { stream ->
+                scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream)
+            }
+            Uri.fromFile(outputFile).toString()
+        } catch (io: IOException) {
+            outputFile.delete()
+            null
+        } finally {
+            scaledBitmap.recycle()
+        }
+    }
+
+    private fun decodeBitmap(uri: Uri, targetWidth: Int, targetHeight: Int): Bitmap? {
+        val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        openInputStream(uri)?.use { stream -> BitmapFactory.decodeStream(stream, null, options) } ?: return null
+        options.inSampleSize = calculateInSampleSize(options, targetWidth, targetHeight)
+        options.inJustDecodeBounds = false
+        return openInputStream(uri)?.use { stream -> BitmapFactory.decodeStream(stream, null, options) }
+    }
+
+    private fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
+        var inSampleSize = 1
+        val height = options.outHeight
+        val width = options.outWidth
+        if (height > reqHeight || width > reqWidth) {
+            var halfHeight = height / 2
+            var halfWidth = width / 2
+            while (halfHeight / inSampleSize >= reqHeight && halfWidth / inSampleSize >= reqWidth) {
+                inSampleSize *= 2
+            }
+        }
+        return inSampleSize
+    }
+
+    private fun resizeBitmapToBounds(bitmap: Bitmap, maxWidth: Int, maxHeight: Int): Bitmap {
+        if (bitmap.width <= maxWidth && bitmap.height <= maxHeight) {
+            return bitmap
+        }
+        val scale = min(maxWidth.toFloat() / bitmap.width, maxHeight.toFloat() / bitmap.height)
+        val width = max(1, (bitmap.width * scale).roundToInt())
+        val height = max(1, (bitmap.height * scale).roundToInt())
+        return Bitmap.createScaledBitmap(bitmap, width, height, true)
+    }
+
+    private fun createScaledPhotoFile(): File {
+        val storageDir = File(filesDir, "photos").apply { if (!exists()) mkdirs() }
+        return File.createTempFile("thing_photo_${System.currentTimeMillis()}_", ".jpg", storageDir)
+    }
+
+    private fun openInputStream(uri: Uri): InputStream? {
+        return when (uri.scheme) {
+            ContentResolver.SCHEME_FILE -> uri.path?.let { path ->
+                try {
+                    FileInputStream(File(path))
+                } catch (_: IOException) {
+                    null
+                }
+            }
+            else -> try {
+                contentResolver.openInputStream(uri)
+            } catch (_: Exception) {
+                null
+            }
+        }
+    }
+
 
 
     companion object {

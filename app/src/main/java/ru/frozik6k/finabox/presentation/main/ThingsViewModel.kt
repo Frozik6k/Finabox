@@ -34,17 +34,28 @@ class ThingsViewModel @Inject constructor(
     val currentCatalogName: String?
         get() = _path.value.lastOrNull()
 
-    val entries: StateFlow<List<CatalogDto>> = _path
-        .map { it.lastOrNull() }
-        .flatMapLatest { boxName ->
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
+
+    val entries: StateFlow<List<CatalogDto>> = combine(
+        _path.map { it.lastOrNull() },
+        _searchQuery,
+    ) { boxName, query -> boxName to query.trim() }
+        .flatMapLatest { (boxName, query) ->
             combine(
                 boxDao.observeBoxesInBox(boxName),
                 thingDao.observeThingsInBox(boxName)
             ) { boxes, things ->
+                val normalizedQuery = query.lowercase()
                 val boxEntries = boxes.map { it.toDto() }
                 val thingEntries = things.map { it.toDto() }
-                (boxEntries + thingEntries)
+                val allEntries = (boxEntries + thingEntries)
                     .sortedWith(compareBy({ it.type.ordinal }, { it.name.lowercase() }))
+                if (normalizedQuery.isEmpty()) {
+                    allEntries
+                } else {
+                    allEntries.filter { it.name.lowercase().contains(normalizedQuery) }
+                }
             }
         }
         .stateIn(
@@ -66,6 +77,10 @@ class ThingsViewModel @Inject constructor(
         } else {
             false
         }
+    }
+
+    fun updateSearchQuery(query: String) {
+        _searchQuery.value = query
     }
 }
 

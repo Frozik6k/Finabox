@@ -2,6 +2,7 @@ package ru.frozik6k.finabox.presentation.main
 
 import android.os.Bundle
 import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewTreeObserver
 import androidx.activity.enableEdgeToEdge
@@ -141,29 +142,41 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
-
         val searchItem = menu.findItem(R.id.action_search)
-        val searchView = searchItem.actionView as SearchView
-        searchView.queryHint = getString(R.string.nav_search)
+        val searchView = searchItem.actionView as? SearchView
 
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                viewModel.onSearchQueryChanged(query.orEmpty())
-                searchView.clearFocus()
-                return true
+        searchView?.apply {
+            queryHint = getString(R.string.nav_search)
+            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    viewModel.updateSearchQuery(query.orEmpty())
+                    clearFocus()
+                    return true
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    viewModel.updateSearchQuery(newText.orEmpty())
+                    return true
+                }
+            })
+
+            val currentQuery = viewModel.searchQuery.value
+            if (currentQuery.isNotEmpty()) {
+                searchItem.expandActionView()
+                setQuery(currentQuery, false)
+                clearFocus()
             }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                viewModel.onSearchQueryChanged(newText.orEmpty())
-                return true
-            }
-        })
-
-        searchView.setOnCloseListener {
-            viewModel.onSearchQueryChanged("")
-            false
         }
 
+        searchItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
+            override fun onMenuItemActionExpand(item: MenuItem): Boolean = true
+
+            override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
+                viewModel.updateSearchQuery("")
+                return true
+            }
+
+        })
         return true
     }
 

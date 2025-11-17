@@ -71,6 +71,7 @@
     <string name="remove_photo">Удалить фото</string>
     <string name="camera_permission_required">Предоставьте доступ к камере, чтобы сделать снимок.</string>
     <string name="camera_unavailable">Не удалось открыть камеру</string>
+    <string name="photo_resize_error">Не удалось обработать выбранные фотографии</string>
 
     <string name="fragment_fotos_add">Нажми, чтобы добавить фотографию.</string> <!-- Нажми, чтобы добавить свою фотографию. -->
 

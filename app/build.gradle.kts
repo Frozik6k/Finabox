@@ -18,8 +18,8 @@ android {
         applicationId = "ru.frozik6k.finabox"
         minSdk = 24
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.0.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -63,6 +63,8 @@ dependencies {
     implementation(libs.androidx.coordinatorlayout)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation("androidx.viewpager2:viewpager2:1.1.0")
+    implementation("com.yandex.android:mobileads:7.16.1")
     val room_version = "2.8.2"
 
     implementation(libs.androidx.core.ktx)

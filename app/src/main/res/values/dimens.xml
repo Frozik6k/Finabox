@@ -12,4 +12,5 @@
     <dimen name="padding_icon">1dp</dimen>
 
     <dimen name="text_size">24sp</dimen>
+    <dimen name="photo_container_height">260dp</dimen>
 </resources>

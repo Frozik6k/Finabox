@@ -8,10 +8,10 @@ import java.time.Instant
 @Entity(tableName = "boxes")
 data class BoxDb(
     @PrimaryKey(autoGenerate = true)
-    val id: Long,
+    val id: Long = 0,
     val name: String,
     val description: String,
-    val box: String,
+    val box: String? = null,
     @ColumnInfo(name = "created_at")
     val date: Instant = Instant.now()
 )

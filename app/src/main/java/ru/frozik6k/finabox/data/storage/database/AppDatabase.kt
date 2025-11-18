@@ -11,7 +11,7 @@ import ru.frozik6k.finabox.data.entities.FotoBoxDb
 import ru.frozik6k.finabox.data.entities.FotoThingDb
 import ru.frozik6k.finabox.data.entities.ThingDb
 
-@Database(entities = [ThingDb::class, BoxDb::class, FotoBoxDb::class, FotoThingDb::class], version = 1)
+@Database(entities = [ThingDb::class, BoxDb::class, FotoBoxDb::class, FotoThingDb::class], version = 2)
 @TypeConverters(InstantConverters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun thingDao(): ThingDao

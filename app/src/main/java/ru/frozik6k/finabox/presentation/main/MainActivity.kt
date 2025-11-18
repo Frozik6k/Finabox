@@ -65,7 +65,6 @@ class MainActivity : AppCompatActivity() {
 
 
         enableEdgeToEdge()
-        //setContentView(R.layout.activity_main)
 
         // ждём, пока контейнер отрисуется, чтобы знать его ширину
         binding.adContainerView.viewTreeObserver.addOnGlobalLayoutListener(

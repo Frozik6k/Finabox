@@ -16,7 +16,7 @@
             android:layout_height="match_parent"
             android:adjustViewBounds="true"
             android:contentDescription="@string/photo_preview_content"
-            android:scaleType="centerCrop" />
+            android:scaleType="fitXY" />
 
         <ImageButton
             android:id="@+id/btnRemovePhoto"

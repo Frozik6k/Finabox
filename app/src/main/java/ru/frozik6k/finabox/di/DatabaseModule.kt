@@ -38,10 +38,11 @@ object DatabaseModule {
                 override fun onCreate(db: SupportSQLiteDatabase) {
                     super.onCreate(db)
                     appScope.launch {
-                        val boxes = createSampleBoxes()
-                        boxes.forEach { box -> database.boxDao().insertBox(box) }
-                        createSampleThings(boxes.map { it.name }).forEach { thing ->
-                            database.thingDao().insertThing(thing)
+                        createSampleCatalogs().forEach { catalog ->
+                            database.boxDao().insertBox(catalog.box)
+                            catalog.things.forEach { thing ->
+                                database.thingDao().insertThing(thing)
+                            }
                         }
                     }
                 }
@@ -51,27 +52,56 @@ object DatabaseModule {
         return database
     }
 
-    private fun createSampleBoxes(): List<BoxDb> {
-        return listOf("Каталог 1", "Каталог 2", "Каталог 3").mapIndexed { index, name ->
-            BoxDb(
-                name = name,
-                description = "Описание каталога ${index + 1}",
-                box = null
-            )
-        }
-    }
-
-
-    private fun createSampleThings(boxNames: List<String>): List<ThingDb> {
+    private fun createSampleCatalogs(): List<SampleCatalog> {
         val now = Instant.now()
-        return (1..15).map { index ->
+
+        fun List<String>.toThings(boxName: String): List<ThingDb> = mapIndexed { index, title ->
             ThingDb(
-                name = "Событие $index",
-                description = "Описание события $index",
-                box = boxNames.randomOrNull(),
-                expirationDate = now.plus(index.toLong() * 7, ChronoUnit.DAYS)
+                name = title,
+                description = "${title} — проверенный предмет из каталога \"$boxName\"",
+                box = boxName,
+                expirationDate = now.plus(((index + 1) * 10).toLong(), ChronoUnit.DAYS)
             )
         }
+
+        return listOf(
+            SampleCatalog(
+                box = BoxDb(
+                    name = "Путешествия",
+                    description = "Снаряжение и вещи, которые всегда беру с собой в поездки",
+                    box = null
+                ),
+                things = listOf(
+                    "Дорожный чемодан",
+                    "Универсальный адаптер",
+                    "Надувная подушка"
+                ).toThings("Путешествия")
+            ),
+            SampleCatalog(
+                box = BoxDb(
+                    name = "Хобби",
+                    description = "Инструменты и материалы для творчества",
+                    box = null
+                ),
+                things = listOf(
+                    "Акварельные краски",
+                    "Альбом для скетчей",
+                    "Набор кистей"
+                ).toThings("Хобби")
+            ),
+            SampleCatalog(
+                box = BoxDb(
+                    name = "Дом",
+                    description = "Любимые предметы для уюта и порядка",
+                    box = null
+                ),
+                things = listOf(
+                    "Тёплый плед",
+                    "Ароматическая свеча",
+                    "Короб для хранения"
+                ).toThings("Дом")
+            )
+        )
     }
 
     @Provides
@@ -84,6 +114,9 @@ object DatabaseModule {
     @Singleton
     fun provideAppScope(): CoroutineScope = CoroutineScope(SupervisorJob())
 
-
+    private data class SampleCatalog(
+        val box: BoxDb,
+        val things: List<ThingDb>
+    )
 
 }

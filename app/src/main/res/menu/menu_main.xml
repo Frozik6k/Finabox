@@ -7,10 +7,4 @@
         android:icon="@android:drawable/ic_menu_search"
         app:showAsAction="ifRoom|collapseActionView"
         app:actionViewClass="androidx.appcompat.widget.SearchView"/>
-
-    <item
-        android:id="@+id/action_more"
-        android:title="@string/nav_more"
-        android:icon="@drawable/abc_ic_menu_overflow_material"
-        app:showAsAction="ifRoom"/>
 </menu>

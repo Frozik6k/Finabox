@@ -6,6 +6,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewTreeObserver
+import android.view.ViewGroup
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -14,6 +15,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -88,9 +90,12 @@ class MainActivity : AppCompatActivity() {
         val root = findViewById<View>(R.id.root)
         val appBar = findViewById<View>(R.id.appBar)
         val fabMenu = findViewById<View>(R.id.fabMenu)
+        val adContainer = binding.adContainerView
         val initialRecyclerPaddingBottom = thingsRecycler.paddingBottom
         val initialRecyclerPaddingTop = thingsRecycler.paddingTop
         val initialFabPaddingBottom = fabMenu.paddingBottom
+        val initialAdMarginBottom =
+            (adContainer.layoutParams as ViewGroup.MarginLayoutParams).bottomMargin
 
         ViewCompat.setOnApplyWindowInsetsListener(root) { _, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -100,6 +105,9 @@ class MainActivity : AppCompatActivity() {
                 bottom = initialRecyclerPaddingBottom + systemBars.bottom,
             )
             fabMenu.updatePadding(bottom = initialFabPaddingBottom + systemBars.bottom)
+            adContainer.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                bottomMargin = initialAdMarginBottom + systemBars.bottom
+            }
             insets
         }
 

@@ -38,15 +38,14 @@
         android:id="@+id/ad_container_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent">
-    </FrameLayout>
+        android:layout_gravity="bottom">
 
-    <!-- Сам баннер -->
-    <com.yandex.mobile.ads.banner.BannerAdView
-        android:id="@+id/banner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@id/ad_container_view"/>
+        <!-- Сам баннер -->
+        <com.yandex.mobile.ads.banner.BannerAdView
+            android:id="@+id/banner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </FrameLayout>
 
     <LinearLayout
         android:id="@+id/fabMenu"

@@ -6,8 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.viewpager2.widget.ViewPager2
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.color.MaterialColors
 import ru.frozik6k.finabox.R
 import ru.frozik6k.finabox.dto.CatalogDto
 import ru.frozik6k.finabox.dto.CatalogType
@@ -56,7 +56,10 @@ class CatalogAdapter : RecyclerView.Adapter<CatalogAdapter.CatalogEntryViewHolde
             holder.thingLetter.setBackgroundColor(color)
         }
 
-        val textColor = ContextCompat.getColor(holder.itemView.context, android.R.color.black)
+        val textColor = MaterialColors.getColor(
+            holder.itemView,
+            com.google.android.material.R.attr.colorOnSurface
+        )
         holder.thingName.setTextColor(textColor)
         holder.itemView.setOnClickListener { onItemClick(entry) }
         holder.itemView.setOnLongClickListener {

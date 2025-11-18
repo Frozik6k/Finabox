@@ -1,6 +1,7 @@
 package ru.frozik6k.finabox.presentation.main
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -58,7 +59,7 @@ class MainActivity : AppCompatActivity() {
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.AppTheme_NoActionBar)
+        setTheme(R.style.Theme_Finabox)
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -87,11 +88,9 @@ class MainActivity : AppCompatActivity() {
         val root = findViewById<View>(R.id.root)
         val appBar = findViewById<View>(R.id.appBar)
         val fabMenu = findViewById<View>(R.id.fabMenu)
-        val adContainer = findViewById<View>(R.id.ad_container_view)
         val initialRecyclerPaddingBottom = thingsRecycler.paddingBottom
         val initialRecyclerPaddingTop = thingsRecycler.paddingTop
         val initialFabPaddingBottom = fabMenu.paddingBottom
-        val initialAdPaddingBottom = adContainer.paddingBottom
 
         ViewCompat.setOnApplyWindowInsetsListener(root) { _, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -101,7 +100,6 @@ class MainActivity : AppCompatActivity() {
                 bottom = initialRecyclerPaddingBottom + systemBars.bottom,
             )
             fabMenu.updatePadding(bottom = initialFabPaddingBottom + systemBars.bottom)
-            adContainer.updatePadding(bottom = initialAdPaddingBottom + systemBars.bottom)
             insets
         }
 
@@ -184,7 +182,7 @@ class MainActivity : AppCompatActivity() {
         binding.banner.apply {
             // размер и ID блока
             setAdSize(adSize)
-            setAdUnitId("R-M-17528902-1") // тут твой реальный ID из кабинета
+            setAdUnitId(getString(R.string.yandex_token)) // тут твой реальный ID из кабинета
 
             // слушатель событий (по желанию можно упростить)
             setBannerAdEventListener(object : BannerAdEventListener {

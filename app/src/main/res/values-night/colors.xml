@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#90CAF9</color>
+    <color name="colorPrimaryDark">#1E88E5</color>
+    <color name="colorAccent">#FFAB91</color>
+    <color name="colorNormal">#FF8A65</color>
+    <color name="colorNormalLight">#FFCCBC</color>
+    <color name="colorHover">#FF7043</color>
+    <color name="colorPressed">#4A4A4A</color>
+    <color name="colorTextPath">#64B5F6</color>
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorBackgroundDialog">#CC1F1F1F</color>
+    <color name="colorGrey">#8D8D8D</color>
+    <color name="colorGreyTransparent">#558D8D8D</color>
+    <color name="colorBackground">#121212</color>
+    <color name="transparent">#00000000</color>
+    <color name="catalog_item_thing">#FF8A65</color>
+    <color name="catalog_item_box">#4FC3F7</color>
+    <color name="ic_launcher_background">#1F1F1F</color>
+</resources>

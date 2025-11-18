@@ -125,5 +125,8 @@
     <string name="ok">Ok</string>
     <string name="cancel">Cancel</string>
 
+    <!-- <string name="yandex_token" translatable="false">R-M-17528902-1</string> -->
+    <string name="yandex_token" translatable="false">demo-banner-yandex</string>
+
 
 </resources>

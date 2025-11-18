@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="?attr/colorSurface">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBar"
@@ -25,6 +26,7 @@
         android:id="@+id/recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="?attr/colorSurface"
         android:clipToPadding="false"
         android:paddingTop="8dp"
         android:paddingBottom="96dp"
@@ -36,16 +38,15 @@
         android:id="@+id/ad_container_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom">
-
-        <!-- Сам баннер внутри контейнера -->
-        <com.yandex.mobile.ads.banner.BannerAdView
-            android:id="@+id/banner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+        app:layout_constraintBottom_toBottomOf="parent">
     </FrameLayout>
 
-
+    <!-- Сам баннер -->
+    <com.yandex.mobile.ads.banner.BannerAdView
+        android:id="@+id/banner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@id/ad_container_view"/>
 
     <LinearLayout
         android:id="@+id/fabMenu"
@@ -53,7 +54,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="24dp"
-        android:layout_marginBottom="80dp"
+        android:layout_marginBottom="85dp"
         android:gravity="end"
         android:orientation="vertical">
 
@@ -88,5 +89,6 @@
             app:srcCompat="@android:drawable/ic_input_add"
             app:tint="@android:color/white" />
     </LinearLayout>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
